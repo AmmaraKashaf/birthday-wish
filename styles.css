@@ -385,20 +385,38 @@ img{ max-width:100%; display:block; }
   color:#fff;
 }
 .slides{ position:absolute; inset:0; }
+/* Each slide is two stacked layers of the same photo: a soft blurred
+   "cover" backdrop that fills the whole screen with no bare edges, and the
+   real photo on top at "contain" size — so every photo shows in full,
+   never cropped, whatever its orientation or the screen's shape. */
 .slide{
   position:absolute; inset:0;
-  background-size:cover;
-  background-position:center;
   opacity:0;
-  transform:scale(1.06);
   transition:opacity 1.4s var(--ease);
-  will-change:opacity, transform;
+  will-change:opacity;
+}
+.slide::before,
+.slide::after{
+  content:"";
+  position:absolute; inset:0;
+  background-image:var(--img);
+  background-position:center;
+  background-repeat:no-repeat;
+}
+.slide::before{
+  background-size:cover;
+  filter:blur(38px) saturate(1.15) brightness(.82);
+  transform:scale(1.18);
+}
+.slide::after{
+  background-size:contain;
+  filter:drop-shadow(0 18px 48px rgba(0,0,0,.45));
 }
 .slide.is-active{
   opacity:1;
   animation:kenburns 9s ease-out forwards;
 }
-@keyframes kenburns{ from{ transform:scale(1.10); } to{ transform:scale(1.005); } }
+@keyframes kenburns{ from{ transform:scale(1.06); } to{ transform:scale(1.005); } }
 
 .gallery__scrim{
   position:absolute; inset:0;

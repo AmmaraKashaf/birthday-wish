@@ -243,7 +243,7 @@
     ok.forEach(function (src, i) {
       var s = document.createElement("div");
       s.className = "slide";
-      s.style.backgroundImage = 'url("' + src.replace(/"/g, "%22") + '")';
+      s.style.setProperty("--img", 'url("' + src.replace(/"/g, "%22") + '")');
       s.setAttribute("role", "img");
       s.setAttribute("aria-label", "Photo " + (i + 1) + " of " + ok.length);
       slidesBox.appendChild(s);

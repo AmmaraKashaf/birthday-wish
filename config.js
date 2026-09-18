@@ -6,7 +6,7 @@
 const BIRTHDAY_CONFIG = {
 
   /* ---------- PAGE 1 : the landing / hero ---------- */
-  heroLine1: "Happiest Birthday Pretty Ladki 🎉",
+  heroLine1: "Happiest Birthday Pretty Lady 🎉",
   heroLine2: "Happy 23, Areeba! 💖",
   heroSubtitle: "a little corner of the internet, made just for you",
 
