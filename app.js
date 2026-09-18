@@ -412,8 +412,14 @@
         }).catch(function () { primed = false; }); // try again on the next tap
       }
     }
-    document.addEventListener("click", primeOnce);
-    document.addEventListener("touchend", primeOnce, { passive: true });
+    /* click and touch definitely count as a "real gesture" everywhere; a key
+       press and a mouse-button-down do too (per the HTML spec's activation
+       list) — covers people who scroll with the keyboard or a scrollbar drag
+       without ever landing a full click. Plain wheel/trackpad scrolling does
+       NOT count anywhere, and no script can make a browser treat it as one. */
+    ["click", "touchend", "keydown", "mousedown"].forEach(function (evt) {
+      document.addEventListener(evt, primeOnce, { passive: true });
+    });
 
     enterGalleryAudio = function () { wantsToPlay = true; tryPlay(); };
     exitGalleryAudio = function () {
