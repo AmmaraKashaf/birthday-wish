@@ -361,6 +361,7 @@
   (function () {
     if (!CFG.music) { return; }
     var badge = $("#nowPlaying");
+    var badgeLabel = badge && badge.querySelector(".now-playing__label");
     var audio = new Audio(CFG.music);
     audio.loop = true;
     audio.volume = 0;
@@ -368,6 +369,7 @@
 
     var wantsToPlay = false;  // is the gallery section currently in view?
     var primed = false;       // has the element been unlocked by a real tap yet?
+    var playing = false;
 
     var fade = null;
     function fadeTo(target, done) {
@@ -385,47 +387,70 @@
       }, 40);
     }
 
-    function tryPlay() {
-      if (!wantsToPlay || !primed) { return; }
-      audio.play().then(function () {
-        fadeTo(0.5);
-        if (badge) { badge.classList.add("is-on"); }
-      }).catch(function () { /* still refused — nothing more we can do here */ });
+    /* Reflects the current state on the little corner badge:
+         not in the gallery         → hidden
+         in the gallery, not primed → tappable "tap for sound" prompt
+         in the gallery, playing    → plain "now playing" status */
+    function renderBadge() {
+      if (!badge) { return; }
+      badge.classList.toggle("is-visible", wantsToPlay);
+      badge.classList.toggle("is-on", playing);
+      badge.classList.toggle("is-prompt", wantsToPlay && !playing);
+      badge.tabIndex = wantsToPlay && !playing ? 0 : -1;
+      badge.setAttribute("aria-hidden", wantsToPlay ? "false" : "true");
+      if (badgeLabel) { badgeLabel.textContent = playing ? "now playing" : "tap for sound ♪"; }
+      badge.setAttribute("aria-label", playing ? "Music is playing" : "Play music");
     }
 
-    /* iOS Safari (and some other mobile browsers) only allow audio.play() to
-       succeed when it's called synchronously inside a real tap/click handler —
-       not from an async callback like scroll/IntersectionObserver, which is
-       how the gallery normally starts the music. So on the visitor's very
-       first tap anywhere, "unlock" the element here: play it immediately
-       (muted-volume, since it may not be wanted yet) and pause right away if
-       the gallery isn't in view. After this one real gesture, Safari allows
-       our later programmatic play()/pause() calls on this same element. */
+    function tryPlay() {
+      if (!wantsToPlay || !primed || playing) { return; }
+      audio.play().then(function () {
+        playing = true;
+        fadeTo(0.5);
+        renderBadge();
+      }).catch(function () { /* still refused — the prompt stays visible */ });
+    }
+
+    /* Most browsers (mobile Safari especially) only allow audio.play() to
+       succeed when it's called synchronously inside a real tap/click/key
+       handler — not from an async callback like scroll/IntersectionObserver,
+       which is how the gallery normally starts the music. So the visitor's
+       first such gesture anywhere "unlocks" the element here: played
+       immediately, then paused right back if the gallery isn't open yet.
+       After this one real gesture, later programmatic play()/pause() calls
+       on this same element are allowed without needing another. */
     function primeOnce() {
       if (primed) { return; }
       primed = true;
       var p = audio.play();
       if (p && p.then) {
         p.then(function () {
-          if (wantsToPlay) { fadeTo(0.5); if (badge) { badge.classList.add("is-on"); } }
+          if (wantsToPlay) { playing = true; fadeTo(0.5); renderBadge(); }
           else { audio.pause(); }
-        }).catch(function () { primed = false; }); // try again on the next tap
+        }).catch(function () { primed = false; }); // try again on the next gesture
       }
     }
+
     /* click and touch definitely count as a "real gesture" everywhere; a key
        press and a mouse-button-down do too (per the HTML spec's activation
        list) — covers people who scroll with the keyboard or a scrollbar drag
        without ever landing a full click. Plain wheel/trackpad scrolling does
-       NOT count anywhere, and no script can make a browser treat it as one. */
+       NOT count anywhere in any browser, by design — nothing here can change
+       that, which is exactly why the tappable badge exists as a fallback. */
     ["click", "touchend", "keydown", "mousedown"].forEach(function (evt) {
       document.addEventListener(evt, primeOnce, { passive: true });
     });
 
-    enterGalleryAudio = function () { wantsToPlay = true; tryPlay(); };
+    /* the badge is only ever clickable while wantsToPlay is true (see
+       renderBadge), so priming it here is enough — no separate tryPlay() */
+    if (badge) { badge.addEventListener("click", primeOnce); }
+
+    enterGalleryAudio = function () { wantsToPlay = true; renderBadge(); tryPlay(); };
     exitGalleryAudio = function () {
       wantsToPlay = false;
+      playing = false;
       fadeTo(0, function () { audio.pause(); });
-      if (badge) { badge.classList.remove("is-on"); }
+      renderBadge();
     };
   }());
 

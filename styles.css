@@ -118,8 +118,12 @@ img{ max-width:100%; display:block; }
 
 
 /* ════════════════════════════════════════════════════════════
-   NOW PLAYING (gallery page only — music is tied to this section,
-   no button to press, it just plays while you're looking at photos)
+   NOW PLAYING (gallery page only — music is tied to this section).
+   Most visitors never need to touch this: as soon as they've clicked
+   or tapped anything at all on the page, it just plays on its own.
+   But no browser allows audio to start with zero interaction ever —
+   so if nothing has been clicked yet by the time the gallery opens,
+   this doubles as a small tappable "turn the music on" prompt.
    ════════════════════════════════════════════════════════════ */
 .now-playing{
   position:absolute; z-index:6;
@@ -134,11 +138,23 @@ img{ max-width:100%; display:block; }
   color:#fff;
   font-family:var(--font-ui); font-size:.7rem; font-weight:600;
   letter-spacing:.1em; text-transform:lowercase;
+  appearance:none; -webkit-appearance:none;
+  cursor:default;
   opacity:0; transform:translateY(6px);
-  transition:opacity .6s var(--ease), transform .6s var(--ease);
+  transition:opacity .6s var(--ease), transform .6s var(--ease), background .3s var(--ease);
   pointer-events:none;
 }
-.now-playing.is-on{ opacity:1; transform:translateY(0); }
+.now-playing.is-visible{ opacity:1; transform:translateY(0); }
+.now-playing.is-prompt{
+  pointer-events:auto; cursor:pointer;
+  animation:promptPulse 1.8s ease-in-out infinite;
+}
+.now-playing.is-prompt:hover,
+.now-playing.is-prompt:focus-visible{ background:rgba(255,255,255,.3); }
+@keyframes promptPulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(255,255,255,.35); }
+  50%    { box-shadow:0 0 0 6px rgba(255,255,255,0); }
+}
 .now-playing__bars{ display:flex; align-items:flex-end; gap:2px; height:11px; }
 .now-playing__bars span{
   width:2.5px; height:4px; border-radius:2px;
