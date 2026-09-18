@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Happy 23rd Birthday, Areeba 💖</title>
+<meta name="description" content="A little birthday letter, turned into a website.">
+<meta name="theme-color" content="#FFF8F0">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Lora:ital,wght@0,400;0,500;1,400&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- ══════════════ floating side navigation ══════════════ -->
+<nav class="sidenav" aria-label="Page sections">
+  <a href="#hero"    class="sidenav__dot is-active" data-target="hero"    aria-label="Go to the beginning"><span>Hello</span></a>
+  <a href="#gallery" class="sidenav__dot"           data-target="gallery" aria-label="Go to the photos"><span>Memories</span></a>
+  <a href="#wish"    class="sidenav__dot"           data-target="wish"    aria-label="Go to the birthday wish"><span>The wish</span></a>
+</nav>
+
+<!-- ══════════════ music toggle (appears only if an mp3 exists) ══════════════ -->
+<button id="musicBtn" class="music-btn" type="button" hidden aria-pressed="false" aria-label="Play background music">
+  <span class="music-btn__icon" aria-hidden="true">
+    <span class="music-btn__bar"></span><span class="music-btn__bar"></span>
+    <span class="music-btn__bar"></span><span class="music-btn__bar"></span>
+  </span>
+  <span class="music-btn__label">music</span>
+</button>
+
+
+<main>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE 1 — LANDING
+     ══════════════════════════════════════════════════════════ -->
+<section id="hero" class="section hero">
+
+  <div class="hero__sky" aria-hidden="true">
+    <span class="blob blob--1"></span>
+    <span class="blob blob--2"></span>
+    <span class="blob blob--3"></span>
+  </div>
+
+  <div id="balloons"  class="layer layer--balloons"  aria-hidden="true"></div>
+  <div id="confetti"  class="layer layer--confetti"  aria-hidden="true"></div>
+  <div id="floaties"  class="layer layer--floaties"  aria-hidden="true"></div>
+
+  <div class="hero__content">
+    <p class="hero__eyebrow">🎈 &nbsp;it&rsquo;s your day&nbsp; 🎈</p>
+
+    <h1 id="heroLine1" class="hero__title" aria-label="Happiest Birthday Pretty Ladki"></h1>
+    <p  id="heroLine2" class="hero__subtitle"></p>
+    <p  id="heroNote"  class="hero__note"></p>
+
+    <a href="#gallery" class="continue" aria-label="Continue to the photos">
+      <span class="continue__text">Continue</span>
+      <span class="continue__arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </span>
+    </a>
+  </div>
+
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE 2 — PHOTO SLIDESHOW
+     ══════════════════════════════════════════════════════════ -->
+<section id="gallery" class="section gallery" aria-roledescription="carousel" aria-label="Photo slideshow">
+
+  <div id="slides" class="slides"></div>
+  <div class="gallery__scrim" aria-hidden="true"></div>
+
+  <div id="galleryEmpty" class="gallery__empty" hidden>
+    <span class="gallery__empty-emoji" aria-hidden="true">🌸</span>
+    <p>Drop your photos into <code>public/images/</code><br>and they&rsquo;ll bloom right here.</p>
+  </div>
+
+  <div class="gallery__content">
+    <h2 id="galleryTitle" class="gallery__title"></h2>
+    <p  id="gallerySub"   class="gallery__sub"></p>
+  </div>
+
+  <button id="prevBtn" class="navarrow navarrow--prev" type="button" aria-label="Previous photo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <button id="nextBtn" class="navarrow navarrow--next" type="button" aria-label="Next photo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+
+  <div id="dots" class="dots" role="tablist" aria-label="Choose a photo"></div>
+
+  <a href="#wish" class="gallery__next" aria-label="Continue to the birthday wish">
+    <span>one more thing&hellip;</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+  </a>
+
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE 3 — THE BIRTHDAY WISH
+     ══════════════════════════════════════════════════════════ -->
+<section id="wish" class="section wish">
+
+  <div id="sparkles" class="layer layer--sparkles" aria-hidden="true"></div>
+
+  <div class="wish__inner">
+
+    <figure class="portrait reveal">
+      <div class="portrait__frame">
+        <img id="specialPhoto" src="" alt="A favourite photo of Areeba" decoding="async">
+        <div class="portrait__fallback" aria-hidden="true">
+          <span>💐</span>
+          <small>put <code>special.jpg</code> in <code>public/images/</code></small>
+        </div>
+      </div>
+      <span class="portrait__pin portrait__pin--l" aria-hidden="true">🎀</span>
+      <span class="portrait__pin portrait__pin--r" aria-hidden="true">✨</span>
+    </figure>
+
+    <article class="card reveal">
+      <span class="card__corner card__corner--tl" aria-hidden="true">💕</span>
+      <span class="card__corner card__corner--tr" aria-hidden="true">✨</span>
+      <span class="card__corner card__corner--bl" aria-hidden="true">✨</span>
+      <span class="card__corner card__corner--br" aria-hidden="true">💕</span>
+
+      <h2 id="wishTitle" class="card__title"></h2>
+      <div class="card__rule" aria-hidden="true"><span></span>💗<span></span></div>
+
+      <div id="wishBody" class="card__body"></div>
+
+      <p id="signoff" class="card__signoff"></p>
+    </article>
+
+    <p class="footer-note reveal">made with a lot of love, and a little bit of code&nbsp;🤍</p>
+
+    <a href="#hero" class="backtotop" aria-label="Back to the top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
+      <span>read it again</span>
+    </a>
+
+  </div>
+</section>
+
+</main>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
