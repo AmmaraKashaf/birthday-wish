@@ -64,7 +64,7 @@ Thank you for every late-night conversation, every terrible joke, every time you
 
 Here's to a year that is kind to you. May it bring you everything you've been quietly hoping for, and a few beautiful things you never thought to ask for.
 
-Happy birthday, pretty ladki. 🎂`,
+Happy birthday, pretty lady. 🎂`,
   /* ⬆⬆⬆  END OF WISH  ⬆⬆⬆ */
 
   signoff: "With all my love 💖",
