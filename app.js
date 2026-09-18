@@ -351,7 +351,67 @@
   }());
 
 
-  /* ══════════════ 5. side nav + scroll reveals ══════════════ */
+  /* ══════════════ 5. music tied to the gallery page only ══════════════
+     No button to press — the song simply plays while "Memories We Made"
+     is on screen, and fades out the moment you scroll away from it. */
+
+  var enterGalleryAudio = function () {};
+  var exitGalleryAudio  = function () {};
+
+  (function () {
+    if (!CFG.music) { return; }
+    var badge = $("#nowPlaying");
+    var audio = new Audio(CFG.music);
+    audio.loop = true;
+    audio.volume = 0;
+    audio.preload = "auto";
+
+    var wantsToPlay = false;  // is the gallery section currently in view?
+    var blocked = false;      // browser refused autoplay — retry after a tap
+
+    var fade = null;
+    function fadeTo(target, done) {
+      clearInterval(fade);
+      fade = setInterval(function () {
+        var step = target > audio.volume ? 0.05 : -0.05;
+        var next = audio.volume + step;
+        if ((step > 0 && next >= target) || (step < 0 && next <= target)) {
+          audio.volume = target;
+          clearInterval(fade);
+          if (done) { done(); }
+        } else {
+          audio.volume = Math.min(1, Math.max(0, next));
+        }
+      }, 40);
+    }
+
+    function tryPlay() {
+      if (!wantsToPlay) { return; }
+      audio.play().then(function () {
+        blocked = false;
+        fadeTo(0.5);
+        if (badge) { badge.classList.add("is-on"); }
+      }).catch(function () {
+        blocked = true;  // most likely: no user gesture yet on this page load
+      });
+    }
+
+    /* the moment the visitor taps/clicks anywhere, retry a blocked play —
+       covers browsers that won't allow audio until the very first gesture */
+    document.addEventListener("click", function () {
+      if (blocked) { tryPlay(); }
+    });
+
+    enterGalleryAudio = function () { wantsToPlay = true; tryPlay(); };
+    exitGalleryAudio = function () {
+      wantsToPlay = false;
+      fadeTo(0, function () { audio.pause(); });
+      if (badge) { badge.classList.remove("is-on"); }
+    };
+  }());
+
+
+  /* ══════════════ 6. side nav + scroll reveals ══════════════ */
 
   if ("IntersectionObserver" in window) {
 
@@ -361,7 +421,11 @@
     var navDots = Array.prototype.slice.call(document.querySelectorAll(".sidenav__dot"));
     var spy = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.target.id === "gallery") { visible = entry.isIntersecting; }
+        if (entry.target.id === "gallery") {
+          if (entry.isIntersecting && !visible) { enterGalleryAudio(); }
+          if (!entry.isIntersecting && visible) { exitGalleryAudio(); }
+          visible = entry.isIntersecting;
+        }
         if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
           navDots.forEach(function (d) {
             d.classList.toggle("is-active", d.dataset.target === entry.target.id);
@@ -399,55 +463,8 @@
 
   } else {
     visible = true;
+    if (CFG.music) { enterGalleryAudio(); }
     document.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("is-in"); });
   }
-
-
-  /* ══════════════ 6. optional background music ══════════════ */
-
-  (function () {
-    var btn = $("#musicBtn");
-    if (!btn || !CFG.music) { return; }
-
-    var audio = new Audio(CFG.music);
-    audio.loop = true;
-    audio.volume = 0;
-    audio.preload = "auto";
-
-    /* the button only appears once we know the file is really there */
-    audio.addEventListener("canplaythrough", function () { btn.hidden = false; }, { once: true });
-    audio.addEventListener("error", function () { btn.hidden = true; });
-
-    var fade = null;
-    function fadeTo(target, done) {
-      clearInterval(fade);
-      fade = setInterval(function () {
-        var step = target > audio.volume ? 0.04 : -0.04;
-        var next = audio.volume + step;
-        if ((step > 0 && next >= target) || (step < 0 && next <= target)) {
-          audio.volume = target;
-          clearInterval(fade);
-          if (done) { done(); }
-        } else {
-          audio.volume = Math.min(1, Math.max(0, next));
-        }
-      }, 40);
-    }
-
-    btn.addEventListener("click", function () {
-      var playing = btn.getAttribute("aria-pressed") === "true";
-      if (playing) {
-        fadeTo(0, function () { audio.pause(); });
-        btn.setAttribute("aria-pressed", "false");
-        btn.setAttribute("aria-label", "Play background music");
-      } else {
-        audio.play().then(function () {
-          fadeTo(0.45);
-          btn.setAttribute("aria-pressed", "true");
-          btn.setAttribute("aria-label", "Pause background music");
-        }).catch(function () { /* browser blocked it — nothing to do */ });
-      }
-    });
-  }());
 
 }());

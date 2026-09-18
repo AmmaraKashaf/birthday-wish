@@ -101,11 +101,16 @@ Don't remove that line.
 
 ## Optional: background music
 
-Drop an `.mp3` at **`public/audio/song.mp3`**. A small music toggle appears in
-the top-right corner by itself, and fades the track in and out.
+Drop an `.mp3` at **`public/audio/song.mp3`**. No button to press — the song
+plays automatically while the **photo slideshow ("Memories We Made")** is on
+screen, fading in as you scroll into it and fading out the moment you scroll
+away. A small "now playing" badge appears in the corner while it's on.
 
-If the file isn't there, the button stays hidden — nothing to configure. Browsers
-won't autoplay audio, so it always starts on a tap.
+If the file isn't there, nothing plays and nothing breaks — no configuration
+needed. Browsers won't autoplay audio before the visitor has interacted with
+the page at all (a tap, a click, scrolling counts once they've tapped
+"Continue"); if that happens, the song just picks up on the very next tap
+anywhere on the page.
 
 ## Files
 
@@ -114,7 +119,7 @@ won't autoplay audio, so it always starts on a tap.
 | `config.js` | **All the words and settings.** The only file you need to edit |
 | `index.html` | Page structure |
 | `styles.css` | All the styling and animations |
-| `app.js` | Slideshow, animations, music toggle |
+| `app.js` | Slideshow, animations, gallery-page music |
 | `update-photos.ps1` | Fills in the photo list from `public/images/` |
 | `vercel.json` | Deployment settings and caching |
 
