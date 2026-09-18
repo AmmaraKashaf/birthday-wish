@@ -367,7 +367,7 @@
     audio.preload = "auto";
 
     var wantsToPlay = false;  // is the gallery section currently in view?
-    var blocked = false;      // browser refused autoplay — retry after a tap
+    var primed = false;       // has the element been unlocked by a real tap yet?
 
     var fade = null;
     function fadeTo(target, done) {
@@ -386,21 +386,34 @@
     }
 
     function tryPlay() {
-      if (!wantsToPlay) { return; }
+      if (!wantsToPlay || !primed) { return; }
       audio.play().then(function () {
-        blocked = false;
         fadeTo(0.5);
         if (badge) { badge.classList.add("is-on"); }
-      }).catch(function () {
-        blocked = true;  // most likely: no user gesture yet on this page load
-      });
+      }).catch(function () { /* still refused — nothing more we can do here */ });
     }
 
-    /* the moment the visitor taps/clicks anywhere, retry a blocked play —
-       covers browsers that won't allow audio until the very first gesture */
-    document.addEventListener("click", function () {
-      if (blocked) { tryPlay(); }
-    });
+    /* iOS Safari (and some other mobile browsers) only allow audio.play() to
+       succeed when it's called synchronously inside a real tap/click handler —
+       not from an async callback like scroll/IntersectionObserver, which is
+       how the gallery normally starts the music. So on the visitor's very
+       first tap anywhere, "unlock" the element here: play it immediately
+       (muted-volume, since it may not be wanted yet) and pause right away if
+       the gallery isn't in view. After this one real gesture, Safari allows
+       our later programmatic play()/pause() calls on this same element. */
+    function primeOnce() {
+      if (primed) { return; }
+      primed = true;
+      var p = audio.play();
+      if (p && p.then) {
+        p.then(function () {
+          if (wantsToPlay) { fadeTo(0.5); if (badge) { badge.classList.add("is-on"); } }
+          else { audio.pause(); }
+        }).catch(function () { primed = false; }); // try again on the next tap
+      }
+    }
+    document.addEventListener("click", primeOnce);
+    document.addEventListener("touchend", primeOnce, { passive: true });
 
     enterGalleryAudio = function () { wantsToPlay = true; tryPlay(); };
     exitGalleryAudio = function () {
